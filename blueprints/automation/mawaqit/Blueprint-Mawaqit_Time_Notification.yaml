@@ -1,0 +1,136 @@
+blueprint:
+  name: Mawaqit Time Notification
+  description: Notification at the time of the mawaqit prayers. PLEASE make sure to
+    install 'Mawaqit Prayer Times' integration before you use this blueprint.
+  domain: automation
+  input:
+    Mobile_to_Notify:
+      name: Mobile Device to notify
+      description: Device needs to run the official Home Assistant app to receive
+        notifications.
+      default: ''
+      selector:
+        device:
+          integration: mobile_app
+    Media_Player_to_Notify:
+      name: Media Player to play Athan
+      description: Choose Media player device to play the Athan.
+      selector:
+        entity:
+          domain: media_player
+    Athan_Media:
+      name: Athan Media
+      description: Name of the playlist that contains the Athan sound or mp3 link if using service music
+    Athan_Media_Fajr:
+      name: Athan Media Fajr
+      description: Name of the playlist that contains the Fajr Athan sound or mp3 link if using service music      
+    Music_Service:
+      name: Music Service
+      description: Name of the music service you are subscribed to.
+      selector:
+        select:
+          options:
+          - music
+          - APPLE_MUSIC
+          - AMAZON_MUSIC
+          - SPOTIFY
+  source_url: https://gist.github.com/shadynafie/1bc4e28717fe0955a828e8d092f7e4bf
+trigger:
+- platform: time
+  at: sensor.fajr_mawaqit
+  id: Fajr
+- platform: time
+  id: Duhr
+  at: sensor.dhuhr_mawaqit
+- platform: time
+  id: Asr
+  at: sensor.asr_mawaqit
+- platform: time
+  at: sensor.maghrib_mawaqit
+  id: Maghrib
+- platform: time
+  at: sensor.isha_mawaqit
+  id: Isha
+condition: []
+action:
+- choose:
+  - conditions:
+    - condition: trigger
+      id: Fajr
+    sequence:
+    - type: notify
+      domain: mobile_app
+      device_id: !input 'Mobile_to_Notify'
+      title: 🕌 Prayer Time 🕌
+      message: حان الآن موعد صلاة الفجر
+    - service: media_player.play_media
+      target:
+        entity_id: !input 'Media_Player_to_Notify'
+      data:
+        media_content_id: !input 'Athan_Media_Fajr'
+        media_content_type: !input 'Music_Service'
+  - conditions:
+    - condition: trigger
+      id: Duhr
+    sequence:
+    - type: notify
+      domain: mobile_app
+      device_id: !input 'Mobile_to_Notify'
+      title: 🕌 Prayer Time 🕌
+      message: حان الآن موعد صلاة الظهر
+    - service: media_player.play_media
+      target:
+        entity_id: !input 'Media_Player_to_Notify'
+      data:
+        media_content_id: !input 'Athan_Media'
+        media_content_type: !input 'Music_Service'
+  - conditions:
+    - condition: trigger
+      id: Asr
+    sequence:
+    - type: notify
+      domain: mobile_app
+      device_id: !input 'Mobile_to_Notify'
+      title: 🕌 Prayer Time 🕌
+      message: حان الآن موعد صلاة العصر
+    - service: media_player.play_media
+      target:
+        entity_id: !input 'Media_Player_to_Notify'
+      data:
+        media_content_id: !input 'Athan_Media'
+        media_content_type: !input 'Music_Service'
+  - conditions:
+    - condition: trigger
+      id: Maghrib
+    sequence:
+    - type: notify
+      domain: mobile_app
+      device_id: !input 'Mobile_to_Notify'
+      title: 🕌 Prayer Time 🕌
+      message: حان الآن موعد صلاة المغرب
+    - service: media_player.play_media
+      target:
+        entity_id: !input 'Media_Player_to_Notify'
+      data:
+        media_content_id: !input 'Athan_Media'
+        media_content_type: !input 'Music_Service'
+  - conditions:
+    - condition: trigger
+      id: Isha
+    sequence:
+    - type: notify
+      domain: mobile_app
+      device_id: !input 'Mobile_to_Notify'
+      title: 🕌 Prayer Time 🕌
+      message: حان الآن موعد صلاة العشاء
+    - service: media_player.play_media
+      target:
+        entity_id: !input 'Media_Player_to_Notify'
+      data:
+        media_content_id: !input 'Athan_Media'
+        media_content_type: !input 'Music_Service'
+  default: []
+mode: single
+
+
+
